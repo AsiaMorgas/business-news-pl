@@ -9,30 +9,16 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static utils.HttpConnector.connectTo;
+import static utils.HttpConnector.*;
 import static utils.StringUtils.*;
 
 public class NewsController {
-    private final String API_KEY = "b4036d619c9b4945ac34c7e05a62b972";
-    private final String NEWS_URL = "https://newsapi.org/v2";
     private final String fileName = fileNameWithTimestamp("news", ".txt");
 
-    public void getArticles(String forCountry, String onTopic) {
-        String responseAsString = "";
-        URL url = createUrl(NEWS_URL, API_KEY, onTopic, forCountry);
-        try {
-            HttpURLConnection connection = connectTo(url);
-            int responsecode = connection.getResponseCode();
-            if (responsecode != 200) {
-                throw new RuntimeException("Request failed - response code: " + responsecode);
-            } else {
-                responseAsString = readFrom(url);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void saveArticlesToFile(String forCountry, String onTopic) {
+        String responseAsString = fetchAllArticlesByCountryAndTopic(forCountry, onTopic);
 
-        JSONParser parse = new JSONParser();
+        final JSONParser parse = new JSONParser();
         try {
             JSONObject jsonAsObject = (JSONObject) parse.parse(responseAsString);
             JSONArray jsonArrayExtracted = (JSONArray) jsonAsObject.get("articles");
@@ -48,5 +34,34 @@ public class NewsController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public String fetchAllArticlesByCountryAndTopic(String forCountry, String onTopic) {
+        final String NEWS_URL = baseUrl();
+        final String API_KEY = fetchApiKey();
+        final URL url = createUrl(NEWS_URL, API_KEY, onTopic, forCountry);
+
+        String responseAsString = "";
+
+        if (onTopic.isEmpty() || forCountry.isEmpty()) {
+            throw new IllegalArgumentException("Params should not be empty.");
+        } else {
+            try {
+                HttpURLConnection connection = connectTo(url);
+                int responsecode = connection.getResponseCode();
+                if (responsecode != 200) {
+                    throw new IllegalStateException("Request failed - response code: " + responsecode);
+                } else {
+                    responseAsString = readFrom(url);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return responseAsString;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }

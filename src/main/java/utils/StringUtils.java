@@ -5,10 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -52,7 +49,7 @@ public class StringUtils {
         Scanner sc = new Scanner(url.openStream(), StandardCharsets.UTF_8);
         while (sc.hasNext()) {
             content += sc.nextLine();
-            content.replaceAll("\n","");
+            content.replaceAll("\n", "");
         }
         sc.close();
         return content;

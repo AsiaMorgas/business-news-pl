@@ -2,11 +2,11 @@ import controller.NewsController;
 
 public class NewsApp {
     public static void main(String[] args) {
-        runApplication();
+        runApplicationFor("pl", "business");
     }
 
-    private static void runApplication() {
+    public static void runApplicationFor(String country, String topic) {
         NewsController controller = new NewsController();
-        controller.getArticles("pl", "business");
+        controller.saveArticlesToFile(country, topic);
     }
 }
